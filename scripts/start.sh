@@ -17,25 +17,37 @@ sudo service postgresql start
 sudo -u postgres psql -c 'ALTER USER postgres PASSWORD '\''1234'\'';'
 sudo -u postgres psql -c 'drop database if exists '"$1"';'
 sudo -u postgres psql -c 'create database '"$1"';'
-sudo -u postgres -H -- psql -d $1 -c 'CREATE TABLE logging (id BIGSERIAL PRIMARY KEY, logLevel int, datetime VARCHAR(20), other VARCHAR(256));'
+sudo -u postgres -H -- psql -d $1 -c 'CREATE TABLE logging (id BIGSERIAL PRIMARY KEY, datetime VARCHAR(32), area VARCHAR(16), sensor VARCHAR(16), sensor_data VARCHAR(16));'
 
 # Генерируем входные данные и добавляем их в таблицу
-POSTFIX=("fccd8a5f3a42,rsyslogd-2007:,action -action 9- suspended, next retry is Fri Oct 26 13:54:37 2018 [v8.16.0 try http://www.rsyslog.com/e/2007 ]"
-        "fccd8a5f3a42,rsyslogd:,rsyslogds userid changed to 107")
+AREA=("area1"
+      "area2"
+      "area3")
+SENSOR=("sensor455_temp"
+        "sensor245_temp"
+        "sensor777_temp")
+
 for i in {1..200}
 	do
+	    SENSOR_DATA=$((RANDOM % 100))
 	    HOUR=$((RANDOM % 24))
 	    if [ $HOUR -le 9 ]; then
 	        TWO_DIGIT_HOUR="0$HOUR"
 	    else
 	        TWO_DIGIT_HOUR="$HOUR"
 	    fi
-		sudo -u postgres -H -- psql -d $1 -c 'INSERT INTO logging (logLevel, datetime, other) values ('"$((RANDOM % 8))"','\''Nov 10 '"$TWO_DIGIT_HOUR"':13:56'\'','\'"${POSTFIX[$((RANDOM % ${#POSTFIX[*]}))]}"''\'');'
+	    MINUTES=$((RANDOM % 60))
+	    if [ $MINUTES -le 9 ]; then
+          TWO_DIGIT_MINUTES="0$MINUTES"
+      else
+          TWO_DIGIT_MINUTES="$MINUTES"
+      fi
+		sudo -u postgres -H -- psql -d $1 -c 'INSERT INTO logging (datetime, area, sensor, sensor_data) values ('\''20.03.2021 '"$TWO_DIGIT_HOUR"':'"$TWO_DIGIT_MINUTES"':56.375'\'','\'"${AREA[$((RANDOM % ${#AREA[*]}))]}"''\'','\'"${SENSOR[$((RANDOM % ${#SENSOR[*]}))]}"''\'','\'"$SENSOR_DATA"''\'');'
 	done
 
 # Скачиваем SQOOP
 if [ ! -f sqoop-1.4.7.bin__hadoop-2.6.0.tar.gz ]; then
-    wget http://apache-mirror.rbc.ru/pub/apache/sqoop/1.4.7/sqoop-1.4.7.bin__hadoop-2.6.0.tar.gz
+    wget https://archive.apache.org/dist/sqoop/1.4.7/sqoop-1.4.7.bin__hadoop-2.6.0.tar.gz
     tar xvzf sqoop-1.4.7.bin__hadoop-2.6.0.tar.gz
 else
     echo "Sqoop already exists, skipping..."

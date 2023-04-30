@@ -48,3 +48,7 @@ Thumbs.db
 *.mov
 *.wmv
 
+/scripts/spark-2.3.1-bin-hadoop2.7.tgz
+/scripts/spark-2.3.1-bin-hadoop2.7/
+/scripts/sqoop-1.4.7.bin__hadoop-2.6.0/
+/scripts/sqoop-1.4.7.bin__hadoop-2.6.0/

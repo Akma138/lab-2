@@ -30,8 +30,8 @@ public class SparkSQLApplication {
                 .getOrCreate();
 
         Dataset<String> df = sc.read().text(args[0]).as(Encoders.STRING());
-        log.info("===============COUNTING...================");
-        JavaRDD<Row> result = LogLevelEventCounter.countLogLevelPerHour(df);
+        log.info("===============CALCULATING...================");
+        JavaRDD<Row> result = FormatWeatherDate.formatPerHour(df);
         log.info("============SAVING FILE TO " + args[1] + " directory============");
         result.saveAsTextFile(args[1]);
     }
