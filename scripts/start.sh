@@ -29,7 +29,7 @@ SENSOR=("sensor455_temp"
 
 for i in {1..200}
 	do
-	    SENSOR_DATA=$((RANDOM % 100))
+	    SENSOR_DATA=$((RANDOM % 10))
 	    HOUR=$((RANDOM % 24))
 	    if [ $HOUR -le 9 ]; then
 	        TWO_DIGIT_HOUR="0$HOUR"

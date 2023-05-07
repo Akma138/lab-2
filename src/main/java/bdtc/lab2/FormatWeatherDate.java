@@ -22,7 +22,7 @@ public class FormatWeatherDate {
     // Формат времени логов - н-р, '20.03.2021 14:02:15.411'
     private static DateTimeFormatter formatter = new DateTimeFormatterBuilder()
             .appendPattern("dd.MM.yyyy HH:mm:ss.SSS")
-            .parseDefaulting(YEAR, 2021)
+
             .toFormatter();
 
     public static JavaRDD<Row> formatPerHour(Dataset<String> inputDataset) {
@@ -41,7 +41,10 @@ public class FormatWeatherDate {
 
         // Группирует по значениям часа и уровня логирования
         Dataset<Row> t = weatherInfoDataset
-                .toDF("area", "date", "sensorData");
+                .groupBy("area","date", "sensorData")
+                .count()
+                .toDF("area", "date", "sensorData", "count")
+                .sort(functions.asc("date"));
         log.info("===========RESULT=========== ");
         t.show();
         return t.toJavaRDD();
